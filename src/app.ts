@@ -23,14 +23,14 @@ app.use(express.urlencoded({ extended: true }));
 
 // Request logging in development
 if (config.nodeEnv === "development") {
-  app.use((req, res, next) => {
+  app.use((req, _res , next) => {
     logger.debug(`${req.method} ${req.path}`);
     next();
   });
 }
 
 // Health check endpoint
-app.get("/health", (req: Request, res: Response) => {
+app.get("/health", (_req: Request, res: Response) => {
   res.json({
     status: "ok",
     timestamp: new Date().toISOString(),
