@@ -20,8 +20,7 @@ export class AppError extends Error {
 export const errorHandler = (
   err: any,
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ): void => {
   let statusCode = err.statusCode || 500;
   let message = err.message || 'Internal server error';
