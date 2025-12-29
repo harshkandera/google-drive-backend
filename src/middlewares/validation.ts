@@ -1,8 +1,5 @@
 import { body, ValidationChain } from "express-validator";
 
-/**
- * Validation rules for file rename
- */
 export const validateRenameFile = (): ValidationChain[] => {
   return [
     body("filename")
@@ -16,9 +13,6 @@ export const validateRenameFile = (): ValidationChain[] => {
   ];
 };
 
-/**
- * Validation rules for file sharing
- */
 export const validateShareFile = (): ValidationChain[] => {
   return [
     body("email")
@@ -31,9 +25,6 @@ export const validateShareFile = (): ValidationChain[] => {
   ];
 };
 
-/**
- * Validation rules for search
- */
 export const validateSearch = (): ValidationChain[] => {
   return [
     body("query")

@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import logger from '../utils/logger';
+import { Request, Response, NextFunction } from "express";
+import logger from "../utils/logger";
 
 export class AppError extends Error {
   statusCode: number;
@@ -14,18 +14,10 @@ export class AppError extends Error {
   }
 }
 
-/**
- * Global error handler middleware
- */
-export const errorHandler = (
-  err: any,
-  req: Request,
-  res: Response
-): void => {
+export const errorHandler = (err: any, req: Request, res: Response): void => {
   let statusCode = err.statusCode || 500;
-  let message = err.message || 'Internal server error';
+  let message = err.message || "Internal server error";
 
-  // Log error
   logger.error(`Error: ${message}`, {
     statusCode,
     stack: err.stack,
@@ -33,17 +25,16 @@ export const errorHandler = (
     method: req.method,
   });
 
-  // Handle specific error types
-  if (err.name === 'ValidationError') {
+  if (err.name === "ValidationError") {
     statusCode = 400;
     message = Object.values(err.errors)
       .map((e: any) => e.message)
-      .join(', ');
+      .join(", ");
   }
 
-  if (err.name === 'CastError') {
+  if (err.name === "CastError") {
     statusCode = 400;
-    message = 'Invalid ID format';
+    message = "Invalid ID format";
   }
 
   if (err.code === 11000) {
@@ -52,26 +43,22 @@ export const errorHandler = (
     message = `${field} already exists`;
   }
 
-  if (err.name === 'JsonWebTokenError') {
+  if (err.name === "JsonWebTokenError") {
     statusCode = 401;
-    message = 'Invalid token';
+    message = "Invalid token";
   }
 
-  if (err.name === 'TokenExpiredError') {
+  if (err.name === "TokenExpiredError") {
     statusCode = 401;
-    message = 'Token expired';
+    message = "Token expired";
   }
 
-  // Send error response
   res.status(statusCode).json({
     error: message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
   });
 };
 
-/**
- * Async error wrapper to catch errors in async route handlers
- */
 export const catchAsync = (fn: Function) => {
   return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);

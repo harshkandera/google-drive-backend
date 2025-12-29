@@ -5,18 +5,14 @@ import { AuthenticatedRequest } from "../types";
 import * as fileService from "../services/fileService";
 import { catchAsync, AppError } from "../middlewares/errorHandler";
 
-// Configure multer for memory storage
 const storage = multer.memoryStorage();
 export const upload = multer({
   storage,
   limits: {
-    fileSize: 100 * 1024 * 1024, // 100MB
+    fileSize: 100 * 1024 * 1024,
   },
 });
 
-/**
- * Upload file
- */
 export const uploadFile = catchAsync(
   async (req: AuthenticatedRequest, res: Response) => {
     if (!req.file) {
@@ -39,9 +35,6 @@ export const uploadFile = catchAsync(
   }
 );
 
-/**
- * Get all user files
- */
 export const getFiles = catchAsync(
   async (req: AuthenticatedRequest, res: Response) => {
     const files = await fileService.getUserFiles(req.user!.id);
@@ -53,9 +46,6 @@ export const getFiles = catchAsync(
   }
 );
 
-/**
- * Get shared files
- */
 export const getSharedFiles = catchAsync(
   async (req: AuthenticatedRequest, res: Response) => {
     const files = await fileService.getSharedFiles(req.user!.id);
@@ -67,9 +57,6 @@ export const getSharedFiles = catchAsync(
   }
 );
 
-/**
- * Get single file
- */
 export const getFile = catchAsync(
   async (req: AuthenticatedRequest, res: Response) => {
     const file = await fileService.getFileById(req.params.id, req.user!.id);
@@ -81,9 +68,6 @@ export const getFile = catchAsync(
   }
 );
 
-/**
- * Delete file
- */
 export const deleteFile = catchAsync(
   async (req: AuthenticatedRequest, res: Response) => {
     await fileService.deleteFile(req.params.id, req.user!.id);
@@ -95,9 +79,6 @@ export const deleteFile = catchAsync(
   }
 );
 
-/**
- * Rename file
- */
 export const renameFile = catchAsync(
   async (req: AuthenticatedRequest, res: Response) => {
     const errors = validationResult(req);
@@ -119,9 +100,6 @@ export const renameFile = catchAsync(
   }
 );
 
-/**
- * Search files
- */
 export const searchFiles = catchAsync(
   async (req: AuthenticatedRequest, res: Response) => {
     const query = (req.query.q as string) || "";
@@ -139,9 +117,6 @@ export const searchFiles = catchAsync(
   }
 );
 
-/**
- * Get download URL
- */
 export const getDownloadUrl = catchAsync(
   async (req: AuthenticatedRequest, res: Response) => {
     const url = await fileService.getFileDownloadUrl(

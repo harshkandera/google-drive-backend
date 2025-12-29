@@ -66,12 +66,10 @@ const FileSchema = new Schema<IFile>(
   }
 );
 
-// Indexes for faster queries
 FileSchema.index({ owner: 1, createdAt: -1 });
 FileSchema.index({ sharedWith: 1 });
 FileSchema.index({ owner: 1, filename: 1 });
 
-// Compound index for unique filename per owner
 FileSchema.index({ owner: 1, filename: 1 }, { unique: true });
 
 const File = mongoose.model<IFile>("File", FileSchema);

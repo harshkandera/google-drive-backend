@@ -25,7 +25,7 @@ const config: EnvConfig = {
   nodeEnv: process.env.NODE_ENV || "development",
   mongodbUri:
     process.env.MONGODB_URI || "mongodb://localhost:27017/google-drive-clone",
-  jwtSecret: process.env.JWT_SECRET || "your-super-secret-jwt-key",
+  jwtSecret: process.env.JWT_SECRET || "Harsh@7877",
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
   aws: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -35,12 +35,11 @@ const config: EnvConfig = {
   },
   storage: {
     type: (process.env.STORAGE_TYPE as "auto" | "local" | "s3") || "auto",
-    maxFileSize: parseInt(process.env.MAX_FILE_SIZE || "104857600", 10), // 100MB default
+    maxFileSize: parseInt(process.env.MAX_FILE_SIZE || "104857600", 10),
   },
 };
 
-// Validate required environment variables
-if (!config.jwtSecret || config.jwtSecret === "your-super-secret-jwt-key") {
+if (!config.jwtSecret || config.jwtSecret === "Harsh@7877") {
   console.warn(
     "⚠️  Warning: Using default JWT_SECRET. Please set a secure secret in production!"
   );

@@ -40,7 +40,6 @@ const UserSchema = new Schema<IUser>(
   }
 );
 
-// Indexes for faster queries
 UserSchema.index({ googleId: 1 });
 UserSchema.index({ email: 1 });
 

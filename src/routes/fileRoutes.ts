@@ -5,10 +5,8 @@ import { validateRenameFile } from "../middlewares/validation";
 
 const router = Router();
 
-// All routes require authentication
 router.use(authenticate);
 
-// File operations
 router.post(
   "/upload",
   fileController.upload.single("file"),

@@ -9,7 +9,6 @@ import logger from "./utils/logger";
 
 const app: Application = express();
 
-// CORS configuration
 app.use(
   cors({
     origin: config.frontendUrl,
@@ -17,19 +16,16 @@ app.use(
   })
 );
 
-// Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Request logging in development
 if (config.nodeEnv === "development") {
-  app.use((req, _res , next) => {
+  app.use((req, _res, next) => {
     logger.debug(`${req.method} ${req.path}`);
     next();
   });
 }
 
-// Health check endpoint
 app.get("/health", (_req: Request, res: Response) => {
   res.json({
     status: "ok",
@@ -38,12 +34,10 @@ app.get("/health", (_req: Request, res: Response) => {
   });
 });
 
-// API routes
 app.use("/api/users", userRoutes);
 app.use("/api/files", fileRoutes);
 app.use("/api/share", shareRoutes);
 
-// 404 handler
 app.use((req: Request, res: Response) => {
   res.status(404).json({
     error: "Route not found",
@@ -51,7 +45,6 @@ app.use((req: Request, res: Response) => {
   });
 });
 
-// Global error handler (must be last)
 app.use(errorHandler);
 
 export default app;

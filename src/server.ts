@@ -6,13 +6,10 @@ import logger from "./utils/logger";
 
 const startServer = async (): Promise<void> => {
   try {
-    // Connect to MongoDB
     await connectDatabase();
 
-    // Initialize S3 (optional)
     initializeS3();
 
-    // Start server
     app.listen(config.port, () => {
       logger.info(`🚀 Server running on port ${config.port}`);
       logger.info(`📦 Environment: ${config.nodeEnv}`);

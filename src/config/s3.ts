@@ -4,9 +4,6 @@ import logger from "../utils/logger";
 
 let s3Client: S3Client | null = null;
 
-/**
- * Initialize S3 client if credentials are available
- */
 export const initializeS3 = (): S3Client | null => {
   const { accessKeyId, secretAccessKey, region } = config.aws;
 
@@ -36,9 +33,6 @@ export const initializeS3 = (): S3Client | null => {
   }
 };
 
-/**
- * Get S3 client instance
- */
 export const getS3Client = (): S3Client | null => {
   if (!s3Client) {
     return initializeS3();
@@ -46,9 +40,6 @@ export const getS3Client = (): S3Client | null => {
   return s3Client;
 };
 
-/**
- * Check if S3 is available
- */
 export const isS3Available = (): boolean => {
   return s3Client !== null;
 };

@@ -3,7 +3,6 @@ import config from "../config/env";
 
 const { combine, timestamp, printf, colorize, errors } = winston.format;
 
-// Custom log format
 const logFormat = printf(({ level, message, timestamp, stack }) => {
   if (stack) {
     return `${timestamp} [${level}]: ${message}\n${stack}`;
@@ -11,9 +10,9 @@ const logFormat = printf(({ level, message, timestamp, stack }) => {
   return `${timestamp} [${level}]: ${message}`;
 });
 
-// Create logger instance
 const logger = winston.createLogger({
   level: config.nodeEnv === "production" ? "info" : "debug",
+
   format: combine(
     errors({ stack: true }),
     timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
@@ -26,7 +25,6 @@ const logger = winston.createLogger({
   ],
 });
 
-// Add file transport in production
 if (config.nodeEnv === "production") {
   logger.add(
     new winston.transports.File({

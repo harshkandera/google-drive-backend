@@ -4,9 +4,6 @@ import { AuthenticatedRequest } from "../types";
 import * as sharingService from "../services/sharingService";
 import { catchAsync, AppError } from "../middlewares/errorHandler";
 
-/**
- * Share file with user
- */
 export const shareFile = catchAsync(
   async (req: AuthenticatedRequest, res: Response) => {
     const errors = validationResult(req);
@@ -29,9 +26,6 @@ export const shareFile = catchAsync(
   }
 );
 
-/**
- * Unshare file
- */
 export const unshareFile = catchAsync(
   async (req: AuthenticatedRequest, res: Response) => {
     const errors = validationResult(req);
@@ -40,6 +34,7 @@ export const unshareFile = catchAsync(
     }
 
     const { email } = req.body;
+
     const file = await sharingService.unshareFile(
       req.params.id,
       req.user!.id,
@@ -54,9 +49,6 @@ export const unshareFile = catchAsync(
   }
 );
 
-/**
- * Get file sharing info
- */
 export const getFileSharing = catchAsync(
   async (req: AuthenticatedRequest, res: Response) => {
     const sharedWith = await sharingService.getFileSharing(

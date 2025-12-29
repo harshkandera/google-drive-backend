@@ -20,20 +20,15 @@ export interface UploadResult {
   url?: string;
 }
 
-/**
- * Ensure upload directory exists
- */
 const ensureUploadDir = async (userId: string): Promise<string> => {
   const userDir = path.join(UPLOAD_DIR, userId);
   await fs.mkdir(userDir, { recursive: true });
   return userDir;
 };
 
-/**
- * Determine storage type based on configuration
- */
 const getStorageType = (): "local" | "s3" => {
   if (config.storage.type === "local") return "local";
+
   if (config.storage.type === "s3") {
     if (!isS3Available()) {
       logger.warn(
@@ -41,15 +36,12 @@ const getStorageType = (): "local" | "s3" => {
       );
       return "local";
     }
+
     return "s3";
   }
-  // Auto mode: use S3 if available, otherwise local
   return isS3Available() ? "s3" : "local";
 };
 
-/**
- * Upload file to local storage
- */
 const uploadToLocal = async (
   userId: string,
   filename: string,
@@ -68,9 +60,6 @@ const uploadToLocal = async (
   };
 };
 
-/**
- * Upload file to S3
- */
 const uploadToS3 = async (
   userId: string,
   filename: string,
@@ -102,9 +91,6 @@ const uploadToS3 = async (
   };
 };
 
-/**
- * Upload file (auto-detect storage)
- */
 export const uploadFile = async (
   userId: string,
   filename: string,
@@ -120,9 +106,6 @@ export const uploadFile = async (
   }
 };
 
-/**
- * Delete file from local storage
- */
 const deleteFromLocal = async (filePath: string): Promise<void> => {
   try {
     await fs.unlink(filePath);
@@ -135,9 +118,6 @@ const deleteFromLocal = async (filePath: string): Promise<void> => {
   }
 };
 
-/**
- * Delete file from S3
- */
 const deleteFromS3 = async (s3Key: string): Promise<void> => {
   const s3Client = getS3Client();
 
@@ -154,9 +134,6 @@ const deleteFromS3 = async (s3Key: string): Promise<void> => {
   logger.info(`File deleted from S3: ${s3Key}`);
 };
 
-/**
- * Delete file
- */
 export const deleteFile = async (
   storageType: "local" | "s3",
   pathOrKey: string
@@ -168,9 +145,6 @@ export const deleteFile = async (
   }
 };
 
-/**
- * Get download URL for file
- */
 export const getDownloadUrl = async (
   storageType: "local" | "s3",
   pathOrKey: string,
@@ -189,18 +163,14 @@ export const getDownloadUrl = async (
       ResponseContentDisposition: `attachment; filename="${filename}"`,
     });
 
-    // Generate presigned URL valid for 1 hour
     const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+
     return url;
   } else {
-    // For local storage, return API endpoint
     return `/api/files/download/${path.basename(pathOrKey)}`;
   }
 };
 
-/**
- * Validate file size
- */
 export const validateFileSize = (size: number): void => {
   if (size > config.storage.maxFileSize) {
     throw new AppError(
@@ -212,12 +182,7 @@ export const validateFileSize = (size: number): void => {
   }
 };
 
-/**
- * Validate file type (basic MIME type check)
- */
 export const validateFileType = (mimeType: string): void => {
-  // Add any file type restrictions here if needed
-  // For now, we allow all file types
   if (!mimeType) {
     throw new AppError("File type is required", 400);
   }

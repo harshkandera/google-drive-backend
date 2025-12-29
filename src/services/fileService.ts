@@ -13,9 +13,6 @@ export interface CreateFileData {
   mimeType: string;
 }
 
-/**
- * Generate unique filename if name already exists
- */
 const generateUniqueFilename = async (
   userId: string,
   desiredFilename: string
@@ -29,7 +26,6 @@ const generateUniqueFilename = async (
     return desiredFilename;
   }
 
-  // Add number suffix
   const ext = path.extname(desiredFilename);
   const base = path.basename(desiredFilename, ext);
   let counter = 1;
@@ -43,28 +39,20 @@ const generateUniqueFilename = async (
     });
     if (!exists) break;
     counter++;
-  } while (counter < 1000); // Safety limit
+  } while (counter < 1000);
 
   return newFilename;
 };
 
-
-
-
-/**
- * Upload and create file record
- */
 export const uploadFile = async (data: CreateFileData): Promise<IFile> => {
   const { userId, filename, originalName, buffer, size, mimeType } = data;
 
-  // Validate file
   storageService.validateFileSize(size);
+
   storageService.validateFileType(mimeType);
 
-  // Generate unique filename
   const uniqueFilename = await generateUniqueFilename(userId, filename);
 
-  // Upload to storage
   const uploadResult = await storageService.uploadFile(
     userId,
     uniqueFilename,
@@ -72,7 +60,6 @@ export const uploadFile = async (data: CreateFileData): Promise<IFile> => {
     mimeType
   );
 
-  // Create database record
   const file = await File.create({
     owner: userId,
     filename: uniqueFilename,
@@ -89,30 +76,18 @@ export const uploadFile = async (data: CreateFileData): Promise<IFile> => {
   return file;
 };
 
-/**
- * Get all files for a user
- */
 export const getUserFiles = async (userId: string): Promise<IFile[]> => {
   return File.find({ owner: userId })
     .sort({ createdAt: -1 })
     .populate("sharedWith", "name email avatar");
 };
 
-
-
-/**
- * Get files shared with user
- */
 export const getSharedFiles = async (userId: string): Promise<IFile[]> => {
   return File.find({ sharedWith: userId })
     .sort({ createdAt: -1 })
     .populate("owner", "name email avatar");
 };
 
-
-/**
- * Get file by ID
- */
 export const getFileById = async (
   fileId: string,
   userId: string
@@ -126,7 +101,6 @@ export const getFileById = async (
     throw new AppError("File not found", 404);
   }
 
-  // Check if user has access (owner or shared with)
   const isOwner = file.owner._id.toString() === userId;
   const isShared = file.sharedWith.some(
     (user: any) => user._id.toString() === userId
@@ -139,9 +113,6 @@ export const getFileById = async (
   return file;
 };
 
-/**
- * Delete file
- */
 export const deleteFile = async (
   fileId: string,
   userId: string
@@ -152,24 +123,19 @@ export const deleteFile = async (
     throw new AppError("File not found", 404);
   }
 
-  // Only owner can delete
   if (file.owner.toString() !== userId) {
     throw new AppError("Only the owner can delete this file", 403);
   }
 
-  // Delete from storage
   const pathOrKey = file.storageType === "s3" ? file.s3Key! : file.path!;
+
   await storageService.deleteFile(file.storageType, pathOrKey);
 
-  // Delete from database
   await File.findByIdAndDelete(fileId);
 
   logger.info(`File deleted: ${file.filename} by user ${userId}`);
 };
 
-/**
- * Rename file
- */
 export const renameFile = async (
   fileId: string,
   userId: string,
@@ -181,12 +147,10 @@ export const renameFile = async (
     throw new AppError("File not found", 404);
   }
 
-  // Only owner can rename
   if (file.owner.toString() !== userId) {
     throw new AppError("Only the owner can rename this file", 403);
   }
 
-  // Check if new filename is already taken by this user
   const existing = await File.findOne({
     owner: userId,
     filename: newFilename,
@@ -205,26 +169,20 @@ export const renameFile = async (
   return file;
 };
 
-/**
- * Search files by name
- */
 export const searchFiles = async (
   userId: string,
   query: string
 ): Promise<IFile[]> => {
-  const regex = new RegExp(query, "i"); // Case-insensitive search
+  const regex = new RegExp(query, "i");
 
   return File.find({
     owner: userId,
     filename: regex,
   })
     .sort({ createdAt: -1 })
-    .limit(50); // Limit results
+    .limit(50);
 };
 
-/**
- * Get download URL for file
- */
 export const getFileDownloadUrl = async (
   fileId: string,
   userId: string

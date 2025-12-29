@@ -11,6 +11,7 @@ export interface AuthenticatedRequest extends Request {
   user?: UserPayload;
 }
 
+
 export interface FileMetadata {
   filename: string;
   originalName: string;
@@ -20,6 +21,7 @@ export interface FileMetadata {
   path?: string;
   s3Key?: string;
 }
+
 
 export interface ShareFileRequest {
   fileId: string;
